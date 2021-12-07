@@ -3,7 +3,7 @@
 #include "../util/log.hpp"
 
 #define PAGE_4KB 0x1000
-#define PAGE_4MB 0x1000000
+#define PAGE_4MB 0x400000
 
 namespace krnpwn
 {
