@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{3e762134-7a7f-4b10-a7ef-2019981b3144}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{e1b30772-5905-4911-bfad-4be401a04298}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\util">
+      <UniqueIdentifier>{7eb963b9-4cf3-49fb-b8ff-c3bad9a1759f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\util">
+      <UniqueIdentifier>{7528d3c6-c44e-4b63-b60a-cd83b66d1462}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\krnpwn">
+      <UniqueIdentifier>{cb99346d-ae02-4d70-9924-3fcd207b596c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\krnpwn\drivers">
+      <UniqueIdentifier>{6cd03dac-0a72-485c-8dfb-12cd1d65b746}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\krnpwn">
+      <UniqueIdentifier>{efd34c08-99b5-4c97-a26c-0bbaba795ab5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\krnpwn\drivers">
+      <UniqueIdentifier>{ac06021f-b8ec-47d5-bf8a-21f11fdb914a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="krnpwn\drivers\krnpwn_base.hpp">
+      <Filter>Header Files\krnpwn</Filter>
+    </ClInclude>
+    <ClInclude Include="util\log.hpp">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\hash.hpp">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\native.hpp">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\nt.hpp">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="krnpwn\krnpwn.hpp">
+      <Filter>Header Files\krnpwn</Filter>
+    </ClInclude>
+    <ClInclude Include="krnpwn\drivers\krnpwn_aida64.hpp">
+      <Filter>Header Files\krnpwn\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="krnpwn\drivers\krnpwn_winio64.hpp">
+      <Filter>Header Files\krnpwn\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="util\WinSysInfoQuery.hpp">
+      <Filter>Header Files\util</Filter>
+    </ClInclude>
+    <ClInclude Include="krnpwn\functions\mapper\nt_defs.hpp" />
+    <ClInclude Include="krnpwn\functions\mapper\pe.hpp" />
+    <ClInclude Include="krnpwn\functions\mapper\mapper.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="krnpwn\drivers\krnpwn_base.cpp">
+      <Filter>Source Files\krnpwn</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="util\native.cpp">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="krnpwn\krnpwn.cpp">
+      <Filter>Source Files\krnpwn</Filter>
+    </ClCompile>
+    <ClCompile Include="krnpwn\drivers\krnpwn_aida64.cpp">
+      <Filter>Source Files\krnpwn\drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="krnpwn\drivers\krnpwn_winio64.cpp">
+      <Filter>Source Files\krnpwn\drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="util\WinSysInfoQuery.cpp">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="krnpwn\functions\mapper\pe.cpp" />
+    <ClCompile Include="krnpwn\functions\mapper\mapper.cpp" />
+  </ItemGroup>
+</Project>
