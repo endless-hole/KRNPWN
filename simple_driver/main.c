@@ -5,16 +5,13 @@
 
 #include "log.h"
 
-NTSTATUS DriverEntry( PDRIVER_OBJECT DriverObject, PUNICODE_STRING RegistryPath )
+NTSTATUS DriverEntry()
 {
     KeEnterGuardedRegion();
 
-    UNREFERENCED_PARAMETER( DriverObject );
-    UNREFERENCED_PARAMETER( RegistryPath );
-
     log_error( "Called from mapped driver\n" );
 
-    PVOID alloc_mem = ExAllocatePoolWithTag( NonPagedPool, 100, 'LOL' );
+    PVOID alloc_mem = ExAllocatePoolWithTag( NonPagedPool, 0x100, 'LOL' );
 
     if( alloc_mem )
     {
