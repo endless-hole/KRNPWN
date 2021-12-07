@@ -16,7 +16,7 @@ namespace krnpwn
     // use a function that is rarely called as it can cause issues or bsod if
     // another process calls the syscall when our hook is in place
     // for this example we are using NtShutdownSystem
-    constexpr const char* syscall_func = "NtShutdownSystem";
+    constexpr const char* SYSCALL_FUNC = "NtShutdownSystem";
     constexpr const char* syscall_mod = "ntdll.dll";
 
     class krnpwn
@@ -50,7 +50,7 @@ namespace krnpwn
         std::invoke_result_t< T, Args... > kcall( void* address, Args ... args ) const
         {
             // get usermode syscall address
-            static const auto proc = native::find_export( LoadLibraryA( syscall_mod ), syscall_func );
+            static const auto proc = native::find_export( LoadLibraryA( syscall_mod ), SYSCALL_FUNC );
 
             // jmp [ rip + 0x0 ]
             // nop
@@ -90,7 +90,7 @@ namespace krnpwn
         void void_kcall( void* address, Args ... args ) const
         {
             // get usermode syscall address
-            static const auto proc = native::find_export( LoadLibraryA( syscall_mod ), syscall_func );
+            static const auto proc = native::find_export( LoadLibraryA( syscall_mod ), SYSCALL_FUNC );
 
             // jmp [ rip + 0x0 ]
             // nop

