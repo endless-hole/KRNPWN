@@ -54,7 +54,6 @@
     <ClInclude Include="util\WinSysInfoQuery.hpp">
       <Filter>Header Files\util</Filter>
     </ClInclude>
-    <ClInclude Include="krnpwn\functions\mapper\nt_defs.hpp" />
     <ClInclude Include="krnpwn\functions\mapper\pe.hpp" />
     <ClInclude Include="krnpwn\functions\mapper\mapper.hpp" />
   </ItemGroup>

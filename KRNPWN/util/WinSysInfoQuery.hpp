@@ -16,11 +16,11 @@ class WinSystemInfoQuery
 {
 private:
     bool                        m_initialised;
-    SYSTEMINFOCLASS2            m_si;
+    nt::SYSTEMINFOCLASS2        m_si;
     std::vector< uint8_t >      m_buffer;
 
 public:
-    WinSystemInfoQuery( SYSTEMINFOCLASS2 sysinfo_class ) :
+    WinSystemInfoQuery( nt::SYSTEMINFOCLASS2 sysinfo_class ) :
         m_initialised( false ), m_si( sysinfo_class )
     {}
 
@@ -40,7 +40,7 @@ public:
 
             // carry out the query
             status = NtQuerySystemInformation(
-                ( SYSTEM_INFORMATION_CLASS )m_si,
+                ( SYSTEM_INFORMATION_CLASS )m_si, // need to cast for the windows API function
                 m_buffer.data(),
                 buffer_size,
                 &return_size
@@ -72,16 +72,16 @@ public:
 // https://www.geoffchappell.com/studies/windows/km/ntoskrnl/api/rtl/ldrreloc/process_modules.htm
 // https://www.geoffchappell.com/studies/windows/km/ntoskrnl/api/rtl/ldrreloc/process_module_information.htm
 class SysModInfoQuery :
-    public WinSystemInfoQuery<RTL_PROCESS_MODULES>
+    public WinSystemInfoQuery<nt::RTL_PROCESS_MODULES>
 {
 public:
     SysModInfoQuery() :
-        WinSystemInfoQuery<RTL_PROCESS_MODULES>
-        ( SYSTEMINFOCLASS2::SystemModuleInformation2 )
+        WinSystemInfoQuery<nt::RTL_PROCESS_MODULES>
+        ( nt::SYSTEMINFOCLASS2::SystemModuleInformation2 )
     {}
 
     // Find a certain module and get info of module back
-    bool find_module( const std::string& name, RTL_PROCESS_MODULE_INFORMATION& info_out );
+    bool find_module( const std::string& name, nt::RTL_PROCESS_MODULE_INFORMATION& info_out );
 
     // Get the kernel address for the module
     void* get_module_base( const std::string& name );
@@ -97,7 +97,7 @@ class SystemProcessInformationQuery :
 public:
     SystemProcessInformationQuery() :
         WinSystemInfoQuery<SYSTEM_PROCESS_INFORMATION>
-        ( SYSTEMINFOCLASS2::SystemProcessInformation2 )
+        ( nt::SYSTEMINFOCLASS2::SystemProcessInformation2 )
     {}
 
     PVOID get_proc_id( const std::wstring& name );

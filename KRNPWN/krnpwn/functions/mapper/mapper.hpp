@@ -1,6 +1,6 @@
 #pragma once
 #include "../../krnpwn.hpp"
-#include "nt_defs.hpp"
+#include "../../../util/nt.hpp"
 #include "pe.hpp"
 
 #include <memory>

@@ -71,7 +71,7 @@ namespace native
     void* find_kernel_export( const std::string& module_name, const std::string& func )
     {
         SysModInfoQuery query;
-        RTL_PROCESS_MODULE_INFORMATION info;
+        nt::RTL_PROCESS_MODULE_INFORMATION info;
         NTSTATUS status;
 
         // execute the query to load the result into the query's buffer
@@ -141,7 +141,7 @@ namespace native
         RegQueryValueExA( key_handle, value.c_str(), 0, &type, data, &ret_length );
 
         // cast the buffer to CM_RESOURCE_LIST
-        CM_RESOURCE_LIST* resource_list = ( CM_RESOURCE_LIST* )data;
+        nt::CM_RESOURCE_LIST* resource_list = ( nt::CM_RESOURCE_LIST* )data;
 
         // loop through the resource lists in the resource map
         for( uint32_t i = 0; i < resource_list->Count; i++ )

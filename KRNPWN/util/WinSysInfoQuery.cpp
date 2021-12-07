@@ -1,13 +1,13 @@
 #include "WinSysInfoQuery.hpp"
 
-bool SysModInfoQuery::find_module( const std::string& name, RTL_PROCESS_MODULE_INFORMATION& info_out )
+bool SysModInfoQuery::find_module( const std::string& name, nt::RTL_PROCESS_MODULE_INFORMATION& info_out )
 {
 
     auto buffer = get();
 
     for( uint32_t i = 0; i < buffer->NumberOfModules; i++ )
     {
-        RTL_PROCESS_MODULE_INFORMATION* info = &buffer->Modules[ i ];
+        nt::RTL_PROCESS_MODULE_INFORMATION* info = &buffer->Modules[ i ];
         UCHAR* file_name = info->FullPathName + info->OffsetToFileName;
 
         if( name == ( char* )file_name )
@@ -26,7 +26,7 @@ void* SysModInfoQuery::get_module_base( const std::string& name )
 
     for( uint32_t i = 0; i < buffer->NumberOfModules; i++ )
     {
-        RTL_PROCESS_MODULE_INFORMATION* info = &buffer->Modules[ i ];
+        nt::RTL_PROCESS_MODULE_INFORMATION* info = &buffer->Modules[ i ];
         UCHAR* file_name = info->FullPathName + info->OffsetToFileName;
 
         if( name == ( char* )file_name )
@@ -40,11 +40,11 @@ void* SysModInfoQuery::get_module_base( const std::string& name )
 
 void SysModInfoQuery::print_info()
 {
-    RTL_PROCESS_MODULES* buffer = get();
+    nt::RTL_PROCESS_MODULES* buffer = get();
 
     for( uint32_t i = 0; i < buffer->NumberOfModules; i++ )
     {
-        RTL_PROCESS_MODULE_INFORMATION* info = &buffer->Modules[ i ];
+        nt::RTL_PROCESS_MODULE_INFORMATION* info = &buffer->Modules[ i ];
 
         UCHAR* file_name = info->FullPathName + info->OffsetToFileName;
 
