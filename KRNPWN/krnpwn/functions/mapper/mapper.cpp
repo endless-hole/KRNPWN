@@ -20,7 +20,7 @@ mapper::mapper( std::shared_ptr<krnpwn::krnpwn> _pwn )
 * 
 * [ret] bool | true if image was successfully mapped
 */
-bool mapper::map_image( std::vector<uint8_t>& _image )
+NTSTATUS mapper::map_image( std::vector<uint8_t>& _image )
 {
     image = _image;
 
@@ -90,21 +90,22 @@ bool mapper::map_image( std::vector<uint8_t>& _image )
         return false;
     }
 
-    // call driver entry point
+   
     remote_entry_point = remote_image_base + pe_hdr->AddressOfEntryPoint;
 
     log_info( "calling mapped driver entry point:", std::hex, remote_entry_point );
 
     Sleep( 1000 );
 
-    using driver_entry_t = void( __stdcall* )( );
+    using driver_entry_t = NTSTATUS( __stdcall* )( );
 
-    pwn->void_kcall< driver_entry_t >( ( void* )remote_entry_point );
+    // call driver entry point and get the return value
+    NTSTATUS return_value = pwn->kcall< driver_entry_t >( ( void* )remote_entry_point );
 
     // free local image as it is now loaded into kernel
     VirtualFree( local_image_base, 0, MEM_RELEASE );
 
-    return true;
+    return return_value;
 }
 
 /*

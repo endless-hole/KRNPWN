@@ -21,7 +21,7 @@ public:
     mapper( std::shared_ptr< krnpwn::krnpwn > _pwn );
     ~mapper() {}
 
-    bool map_image( std::vector< uint8_t >& _image );
+    NTSTATUS map_image( std::vector< uint8_t >& _image );
 
     uint64_t get_image_base() { return remote_image_base; }
     uint64_t get_entry_point() { return remote_entry_point; }

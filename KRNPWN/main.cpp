@@ -8,41 +8,20 @@
 #include "util/log.hpp"
 #include "util/WinSysInfoQuery.hpp"
 
+// kernel debug print defines
+#define DPFLTR_IHVDRIVER_ID 77
+#define DPFLTR_ERROR_LEVEL  0
 
-void demo( std::shared_ptr< krnpwn::krnpwn > pwn )
-{
-    log_info( "reading ntoskrnl DOS header using kernel virtual address..." );
 
-    auto ntoskrnl_base = native::find_kernel_module( "ntoskrnl.exe" );
+void demo( std::shared_ptr< krnpwn::krnpwn > pwn );
+bool map( std::shared_ptr< krnpwn::krnpwn > pwn, char* _file );
 
-    log_info( "ntoskrnl base:", std::hex, ntoskrnl_base );
-
-    auto ntoskrnl_dos = pwn->read_km< IMAGE_DOS_HEADER >( ntoskrnl_base );
-
-    log_info( "ntoskrnl magic:", std::hex, ntoskrnl_dos.e_magic, "\n" );
-
-    log_info( "calling DbgPrint" );
-
-    auto dbg_print_proc = native::find_kernel_export( "ntoskrnl.exe", "DbgPrintEx" );
-
-    using dbg_print_fn = uint32_t( __stdcall* )( uint32_t, uint32_t, const char* );
-
-    auto kernel_debug = pwn->kcall< dbg_print_fn >(
-        dbg_print_proc,
-        77 /* DPFLTR_IHVDRIVER_ID */,
-        0  /* DPFLTR_ERROR_LEVEL */,
-        "called from usermode using NtShutdownSystem hook\n"
-        );
-
-    log_dbg( "DbgPrint ret:", std::hex, kernel_debug, "\n" );
-}
 
 int main( int argc, char* argv[] )
 {
     auto pwn = std::make_shared< krnpwn::krnpwn >();
 
     auto winio = std::make_shared<krnpwn::krnpwn_winio64>();
-
 
     if( argc < 3 )
     {
@@ -87,32 +66,7 @@ int main( int argc, char* argv[] )
                 return -1;
             }
 
-            std::vector< uint8_t > image;
-            std::ifstream file( argv[ 3 ], std::ios::binary );
-
-            if( !file )
-            {
-                log_err( "failed to open", argv[ 3 ] );
-                return -1;
-            }
-
-            image.assign( std::istreambuf_iterator< char >( file ), std::istreambuf_iterator< char >() );
-
-            file.close();
-
-            mapper map( pwn );
-
-            if( map.map_image( image ) )
-            {
-                log_info( "driver is mapped into memory" );
-                log_info( "image_base :", std::hex, map.get_image_base() );
-                log_info( "entry_point:", std::hex, map.get_entry_point() );
-            }
-            else
-            {
-                log_err( "failed to map driver" );
-                return -1;
-            }
+            map( pwn, argv[ 3 ] );
         }
     }
     else
@@ -122,4 +76,67 @@ int main( int argc, char* argv[] )
     }
 
     return 0;
+}
+
+void demo( std::shared_ptr< krnpwn::krnpwn > pwn )
+{
+    log_info( "reading ntoskrnl DOS header using kernel virtual address..." );
+
+    auto ntoskrnl_base = native::find_kernel_module( "ntoskrnl.exe" );
+
+    log_info( "ntoskrnl base:", std::hex, ntoskrnl_base );
+
+    auto ntoskrnl_dos = pwn->read_km< IMAGE_DOS_HEADER >( ntoskrnl_base );
+
+    log_info( "ntoskrnl magic bytes read from memory:", std::hex, ntoskrnl_dos.e_magic, "\n" );
+
+    log_info( "calling DbgPrint" );
+
+    auto dbg_print_proc = native::find_kernel_export( "ntoskrnl.exe", "DbgPrintEx" );
+
+    using dbg_print_fn = uint32_t( __stdcall* )( uint32_t, uint32_t, const char* );
+
+    auto kernel_debug = pwn->kcall< dbg_print_fn >(
+        dbg_print_proc,
+        DPFLTR_IHVDRIVER_ID,
+        DPFLTR_ERROR_LEVEL,
+        "called from usermode using NtShutdownSystem hook\n"
+        );
+
+    log_dbg( "DbgPrint ret:", std::hex, kernel_debug, "\n" );
+}
+
+bool map( std::shared_ptr< krnpwn::krnpwn > pwn, char* _file )
+{
+    std::vector< uint8_t > image;
+    std::ifstream file( _file, std::ios::binary );
+
+    if( !file )
+    {
+        log_err( "failed to open", _file );
+        return false;
+    }
+
+    image.assign( std::istreambuf_iterator< char >( file ), std::istreambuf_iterator< char >() );
+
+    file.close();
+
+    mapper map( pwn );
+
+    NTSTATUS ret;
+
+    if( ( ret = map.map_image( image ) ) == 1337 )
+    {
+        log_info( "driver is mapped into memory" );
+        log_info( "image_base :", std::hex, map.get_image_base() );
+        log_info( "entry_point:", std::hex, map.get_entry_point() );
+        log_info( "return value:", ret );
+        return true;
+    }
+    else
+    {
+        log_err( "failed to map driver" );
+        log_err( "return value:", ret );
+        return false;
+    }
 }
