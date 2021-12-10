@@ -132,6 +132,7 @@ namespace native
             != ERROR_SUCCESS )
         {
             log_err( "failed to query memory map key", result );
+            RegCloseKey( key_handle );
             return std::vector<mem_region>();
         }
 
@@ -177,6 +178,7 @@ namespace native
             }
         }
 
+        RegCloseKey( key_handle );
         return regions;
     }
 }
