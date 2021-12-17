@@ -84,7 +84,7 @@ void demo( std::shared_ptr< krnpwn::krnpwn > pwn )
 
     auto ntoskrnl_base = native::find_kernel_module( "ntoskrnl.exe" );
 
-    log_info( "ntoskrnl base:", std::hex, ntoskrnl_base );
+    log_info( "ntoskrnl base : ", std::hex, ntoskrnl_base );
 
     auto ntoskrnl_dos = pwn->read_km< IMAGE_DOS_HEADER >( ntoskrnl_base );
 
@@ -128,15 +128,15 @@ bool map( std::shared_ptr< krnpwn::krnpwn > pwn, char* _file )
     if( ( ret = map.map_image( image ) ) == 1337 )
     {
         log_info( "driver is mapped into memory" );
-        log_info( "image_base :", std::hex, map.get_image_base() );
-        log_info( "entry_point:", std::hex, map.get_entry_point() );
-        log_info( "return value:", ret );
+        log_info( "image_base   : ", std::hex, map.get_image_base() );
+        log_info( "entry_point  : ", std::hex, map.get_entry_point() );
+        log_info( "return value : ", ret );
         return true;
     }
     else
     {
         log_err( "failed to map driver" );
-        log_err( "return value:", ret );
+        log_err( "return value : ", ret );
         return false;
     }
 }
