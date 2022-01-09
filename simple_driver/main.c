@@ -1,6 +1,3 @@
-#pragma warning(disable : 4201)
-#pragma warning(disable : 4214)
-
 #include <ntddk.h>
 
 #include "log.h"
