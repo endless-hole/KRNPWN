@@ -2,6 +2,7 @@
 #include <fstream>
 
 #include "krnpwn/krnpwn.hpp"
+#include "krnpwn/drivers/krnpwn_winio64.hpp"
 
 #include "krnpwn/functions/mapper/mapper.hpp"
 
@@ -21,7 +22,7 @@ int main( int argc, char* argv[] )
 {
     auto pwn = std::make_shared< krnpwn::krnpwn >();
 
-    auto winio = std::make_shared<krnpwn::krnpwn_winio64>();
+    auto winio = std::make_shared< krnpwn::krnpwn_winio64 >();
 
     if( argc < 3 )
     {
@@ -96,7 +97,7 @@ void demo( std::shared_ptr< krnpwn::krnpwn > pwn )
 
     using dbg_print_fn = uint32_t( __stdcall* )( uint32_t, uint32_t, const char* );
 
-    auto kernel_debug = pwn->kcall< dbg_print_fn >(
+    auto kernel_debug = pwn->call_km< dbg_print_fn >(
         dbg_print_proc,
         DPFLTR_IHVDRIVER_ID,
         DPFLTR_ERROR_LEVEL,

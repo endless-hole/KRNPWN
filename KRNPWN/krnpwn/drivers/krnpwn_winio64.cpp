@@ -90,5 +90,3 @@ bool krnpwn::krnpwn_winio64::unmap_physical_memory( winio64_mem_t& winio_struct 
 
     return true;
 }
-
-

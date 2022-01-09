@@ -21,7 +21,6 @@
   <ItemGroup>
     <ClInclude Include="krnpwn\functions\mapper\mapper.hpp" />
     <ClInclude Include="krnpwn\functions\mapper\pe.hpp" />
-    <ClInclude Include="util\hash.hpp" />
     <ClInclude Include="util\log.hpp" />
     <ClInclude Include="util\native.hpp" />
     <ClInclude Include="util\nt.hpp" />

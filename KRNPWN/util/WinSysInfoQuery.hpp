@@ -29,7 +29,7 @@ public:
         NTSTATUS status;
         ULONG return_size;
 
-        // set up an inital buffer size
+        // set up an initial buffer size
         ULONG buffer_size = ( ULONG )max( m_buffer.size(), 0x1000 );
 
         // loop until the output buffer size is correct
@@ -61,8 +61,8 @@ public:
         return status;
     }
 
-    // simple template get function that will return the buffer as templated buffer
-    // if uninitialised return nullptr
+    // simple template get function that will return the buffer as template buffer
+
     T* get()
     {
         return m_initialised ? ( T* )m_buffer.data() : nullptr;

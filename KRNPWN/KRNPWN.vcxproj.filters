@@ -33,9 +33,6 @@
     <ClInclude Include="util\log.hpp">
       <Filter>Header Files\util</Filter>
     </ClInclude>
-    <ClInclude Include="util\hash.hpp">
-      <Filter>Header Files\util</Filter>
-    </ClInclude>
     <ClInclude Include="util\native.hpp">
       <Filter>Header Files\util</Filter>
     </ClInclude>

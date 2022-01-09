@@ -1,5 +1,4 @@
 #include "native.hpp"
-#include "hash.hpp"
 #include "log.hpp"
 #include "WinSysInfoQuery.hpp"
 

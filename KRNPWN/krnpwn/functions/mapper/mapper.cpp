@@ -15,10 +15,6 @@ mapper::mapper( std::shared_ptr<krnpwn::krnpwn> _pwn )
 * will allocate kernel memory and calculate relocation and imports based off the kernel memory
 * address given.
 * It will then call the entry point of the loaded image to carry out execution.
-* 
-* [in] std::vector<uint8_t>&     | _image | vector containing the image to be mapped into kernel space
-* 
-* [ret] bool | true if image was successfully mapped
 */
 NTSTATUS mapper::map_image( std::vector<uint8_t>& _image )
 {
@@ -82,7 +78,7 @@ NTSTATUS mapper::map_image( std::vector<uint8_t>& _image )
     }
 
     // write fixed image to kernel
-    if( !pwn->kmemcpy( ( void* )remote_image_base, ( void* )( ( uint64_t )local_image_base ), image_size ) )
+    if( !pwn->memcpy_km( ( void* )remote_image_base, ( void* )( ( uint64_t )local_image_base ), image_size ) )
     {
         log_err( "failed to write to remote kernel address" );
         VirtualFree( local_image_base, 0, MEM_RELEASE );
@@ -100,7 +96,7 @@ NTSTATUS mapper::map_image( std::vector<uint8_t>& _image )
     using driver_entry_t = NTSTATUS( __stdcall* )( );
 
     // call driver entry point and get the return value
-    NTSTATUS return_value = pwn->kcall< driver_entry_t >( ( void* )remote_entry_point );
+    NTSTATUS return_value = pwn->call_km< driver_entry_t >( ( void* )remote_entry_point );
 
     // free local image as it is now loaded into kernel
     VirtualFree( local_image_base, 0, MEM_RELEASE );
@@ -110,9 +106,6 @@ NTSTATUS mapper::map_image( std::vector<uint8_t>& _image )
 
 /*
 * Offset the relocations within PE file by the delta
-* 
-* [in/out] pe64::vec_relocs | relocs | vector containing relocation data 
-* [in]     uint64_t         | delta  | delta ( remote base - local header image base )
 */
 void mapper::reloc_by_delta( pe64::vec_relocs relocs, const uint64_t delta )
 {
@@ -139,8 +132,6 @@ void mapper::reloc_by_delta( pe64::vec_relocs relocs, const uint64_t delta )
 
 /*
 * Finds the needed kernel function addresses for the imports
-* 
-* [in/out] pe64::vec_imports | imports | vector containing the module and function names of the imports
 */
 bool mapper::resolve_imports( pe64::vec_imports imports )
 {
@@ -165,45 +156,45 @@ bool mapper::resolve_imports( pe64::vec_imports imports )
 
 /*
 * Kernel memset called from usermode syscall hook
-* 
-* [in] void*    | dst  | start address for the memset operation
-* [in] uint32_t | data | byte value to fill memory block
-* [in] size_t   | size | size of memory block
 */
-void mapper::kmemset( void* dst, uint32_t data, size_t size )
+void mapper::memset_km( void* dst, uint32_t data, size_t size )
 {
     static const auto func = native::find_kernel_export( "ntoskrnl.exe", "memset" );
 
-    pwn->void_kcall< decltype( &memset ) >( func, dst, data, size );
+    if( func == nullptr )
+        return;
+
+    pwn->void_call_km< decltype( &memset ) >( func, dst, data, size );
 }
 
 /*
 * Kernel call, using usermode syscall hook, to ExAllocatePoolWithTag. Tag has already been set within function
-* 
-* [in] POOL_TYPE | type | type of pool to allocate
-* [in] size_t    | size | size of pool to allocate
 */
 uint64_t mapper::allocate_pool( nt::POOL_TYPE type, size_t size )
 {
     static const auto func = native::find_kernel_export( "ntoskrnl.exe", "ExAllocatePoolWithTag" );
 
+    if( func == nullptr )
+        return 0;
+
     // ExAllocatePoolWithTag prototype
     using alloc_pool_fn = uint64_t( __stdcall* )( nt::POOL_TYPE, size_t, uint32_t );
 
-    return pwn->kcall< alloc_pool_fn >( func, type, size, 'HALB' ); // BLAH
+    return pwn->call_km< alloc_pool_fn >( func, type, size, 'HALB' ); // BLAH
 }
 
 /*
 * Kernel call, using usermode syscall hook, to ExFreePool
-* 
-* [in] uint64_t | address | start address of pool to free
 */
 bool mapper::free_pool( uint64_t address )
 {
     static const auto func = native::find_kernel_export( "ntoskrnl.exe", "ExFreePool" );
 
+    if( func == nullptr )
+        return false;
+
     // ExFreePool prototype
     using free_pool_fn = bool( __stdcall* )( uint64_t );
 
-    return pwn->kcall< free_pool_fn >( func, address );
+    return pwn->call_km< free_pool_fn >( func, address );
 }

@@ -31,7 +31,7 @@ private:
     void reloc_by_delta( pe64::vec_relocs relocs, const uint64_t delta );
     bool resolve_imports( pe64::vec_imports imports );
 
-    void kmemset( void* dst, uint32_t data, size_t size );
+    void memset_km( void* dst, uint32_t data, size_t size );
 
     uint64_t allocate_pool( nt::POOL_TYPE type, size_t size );
     bool free_pool( uint64_t address );

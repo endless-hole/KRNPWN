@@ -3,6 +3,12 @@
 #include <string>
 #include <iostream>
 
+/*
+ *
+ * Simple logging class
+ *
+ */
+
 enum class e_log_type
 {
     dbg,

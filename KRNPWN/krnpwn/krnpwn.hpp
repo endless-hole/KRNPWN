@@ -1,10 +1,7 @@
 #pragma once
 
 #include "drivers/krnpwn_base.hpp"
-#include "drivers/krnpwn_winio64.hpp"
-#include "drivers/krnpwn_aida64.hpp"
 
-#include "../util/hash.hpp"
 #include "../util/native.hpp"
 #include "../util/log.hpp"
 
@@ -41,13 +38,13 @@ namespace krnpwn
         bool is_initalised() { return initalised; }
 
     private:
-        uint64_t find_ksyscall( uint64_t address, uint64_t size );
-        bool valid_ksyscall( uint64_t address );
+        uint64_t find_syscall_km( uint64_t address, uint64_t size );
+        bool valid_syscall_km( uint64_t address );
         
 
     public:
         template< class T, class ... Args >
-        std::invoke_result_t< T, Args... > kcall( void* address, Args ... args ) const
+        std::invoke_result_t< T, Args... > call_km( void* address, Args ... args ) const
         {
             // get usermode syscall address
             static const auto proc = native::find_export( LoadLibraryA( syscall_mod ), SYSCALL_FUNC );
@@ -87,7 +84,7 @@ namespace krnpwn
         }
 
         template< class T, class ... Args >
-        void void_kcall( void* address, Args ... args ) const
+        void void_call_km( void* address, Args ... args ) const
         {
             // get usermode syscall address
             static const auto proc = native::find_export( LoadLibraryA( syscall_mod ), SYSCALL_FUNC );
@@ -123,20 +120,20 @@ namespace krnpwn
             drv->write_physical_memory( ksyscall_address, orig_bytes, sizeof( orig_bytes ) );
         }
 
-        bool kmemcpy( void* dst, void* src, size_t size );
+        bool memcpy_km( void* dst, void* src, size_t size );
 
         template< class T >
         T read_km( void* address )
         {
             T buffer;
-            kmemcpy( ( void* )&buffer, ( void* )address, sizeof( T ) );
+            memcpy_km( ( void* )&buffer, ( void* )address, sizeof( T ) );
             return buffer;
         }
 
         template< class T >
         void write_km( void* address, const T& value )
         {
-            kmemcpy( ( void* )address, ( void* )&value, sizeof( T ) );
+            memcpy_km( ( void* )address, ( void* )&value, sizeof( T ) );
         }
     };
 }
