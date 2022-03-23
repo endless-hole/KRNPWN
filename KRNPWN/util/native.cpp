@@ -176,8 +176,9 @@ namespace native
                 }
             }
         }
-
+        
         RegCloseKey( key_handle );
+        free( data );
         return regions;
     }
 }
